@@ -18,6 +18,4 @@ public class journalEntry {
     private String title;
     private  String content;
 
-  // private LocalDateTime date;
-
 }
