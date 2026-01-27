@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -23,8 +24,13 @@ public class UserEntryService {
     @Autowired
     private UserRepository userEntryRepository;
     private  static final PasswordEncoder passwordEncoder  = new BCryptPasswordEncoder();
+
     public void saveGeneralEntry(UserEntry userEntry) {
          userEntryRepository.save(userEntry);
+    }
+public  void saveAdmin(UserEntry userEntry){
+    userEntry.setPassword(passwordEncoder.encode(userEntry.getPassword()));
+userEntry.setRoles(Arrays.asList("User","ADMIN"));
     }
 
     public void saveUser(UserEntry userEntry) {
