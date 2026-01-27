@@ -62,9 +62,11 @@ public class entrycontroller {
         }
     }
 
-    @DeleteMapping("/id/{userName}/{myid}")
-    public List<journalEntry>  delete(@PathVariable String userName,@PathVariable ObjectId myid) {
-        return  JournalEntryService.delete(userName, myid);
+    @DeleteMapping("/id/{myid}")
+    public void  delete(@PathVariable ObjectId myid) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String name = auth.getName();
+        JournalEntryService.delete(name, myid);
     }
 
     @PutMapping("/id/{userName}/{myid}")
@@ -76,7 +78,7 @@ public class entrycontroller {
         if(temp != null) {
        temp.setTitle(a.getTitle() != null && !a.getTitle().isEmpty() ? a.getTitle() : temp.getTitle());
        temp.setContent(a.getContent() != null && !a.getContent().isEmpty() ? a.getContent() : temp.getContent());
-            JournalEntryService.saveGeneralEntry(temp);
+            JournalEntryService.saveEntry(temp);
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

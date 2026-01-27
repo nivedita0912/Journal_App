@@ -24,15 +24,23 @@ public class JournalEntryService {
     @Autowired
     private UserEntryService userEntryService;
 
-    public List<journalEntry> delete( String userName,ObjectId id) {
-        UserEntry user = userEntryService.findByUserName(userName);
-        if(user != null){
-            user.getUserEntryList().removeIf(x -> x.getId().equals(id));
-            userEntryService.saveGeneralEntry(user);
-        }
-        journalEntryRepository.deleteById(id);
+    @Transactional
+    public void delete( String userName,ObjectId id) {
 
-        return journalEntryRepository.findAll();
+        try {
+            UserEntry user = userEntryService.findByUserName(userName);
+            boolean removed = user.getUserEntryList().removeIf(x -> x.getId().equals(id));
+            if (removed) {
+                userEntryService.saveGeneralEntry(user);
+                journalEntryRepository.deleteById(id);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            throw  new RuntimeException("error in finding the either user or entry");
+        }
+    }
+    public void saveEntry(journalEntry journalEntry) {
+        journalEntryRepository.save(journalEntry);
     }
 
     @Transactional
