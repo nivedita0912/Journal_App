@@ -42,8 +42,8 @@ public class JournalEntryService {
         if (user == null) {
             throw new IllegalArgumentException("User not found");
         }
-
-        entry.setDate(LocalDateTime.now());
+//
+//        entry.setDate(LocalDateTime.now());
 
         journalEntry saved = journalEntryRepository.save(entry);
 

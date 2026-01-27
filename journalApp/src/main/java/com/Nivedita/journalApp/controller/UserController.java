@@ -25,11 +25,6 @@ public class UserController {
     public List<UserEntry> getAllUsers(){
         return userEntryService.getAll();
     }
-//    @PostMapping
-//    public Boolean addUser(@RequestBody UserEntry user){
-//         userEntryService.saveUser(user);
-//    return true;
-//    }
     @PutMapping("/put")
     public ResponseEntity<?> updateUser(@RequestBody UserEntry user){
        Authentication auth = SecurityContextHolder.getContext().getAuthentication();

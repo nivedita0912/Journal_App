@@ -6,6 +6,8 @@ import com.Nivedita.journalApp.GeneralEntry.journalEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -20,9 +22,11 @@ public class entrycontroller {
    @Autowired
    private UserEntryService userEntryService;
 
-    @GetMapping("{userName}")
-    public ResponseEntity<?> getAllJournalEntriesOfUser(@PathVariable String userName) {
-        UserEntry user = userEntryService.findByUserName(userName);
+    @GetMapping("/get")
+    public ResponseEntity<?> getAllJournalEntriesOfUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String name = auth.getName();
+        UserEntry user = userEntryService.findByUserName(name);
          List<journalEntry> all = user.getUserEntryList();
        if(all != null && !all.isEmpty()){
            return new ResponseEntity<>(all,HttpStatus.OK);
@@ -39,10 +43,12 @@ public class entrycontroller {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND) ;
     }
 
-    @PostMapping("{userName}")
-    public ResponseEntity<journalEntry> createEntries(@RequestBody journalEntry myentry,@PathVariable String userName) {
+    @PostMapping("/post")
+    public ResponseEntity<journalEntry> createEntries(@RequestBody journalEntry myentry) {
         try {
-            JournalEntryService.saveGeneralEntry(myentry,userName);
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String name = auth.getName();
+            JournalEntryService.saveGeneralEntry(myentry,name);
             return new ResponseEntity<>(myentry,HttpStatus.CREATED);
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
