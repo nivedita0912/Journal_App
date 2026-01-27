@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/journal")
@@ -36,10 +37,16 @@ public class entrycontroller {
 
     @GetMapping("/id/{myid}")
     public ResponseEntity<journalEntry> find(@PathVariable ObjectId myid) {
-        Optional<journalEntry> temp =JournalEntryService.findById(myid);
-       if(temp.isPresent()){
-           return new ResponseEntity<>(temp.get(), HttpStatus.OK) ;
-       }
+       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+       String userName  = authentication.getName();
+      UserEntry userEntry =  userEntryService.findByUserName(userName);
+     List<journalEntry> collect = userEntry.getUserEntryList().stream().filter(x -> x.getId().equals(myid)).collect(Collectors.toList());
+     if(!collect.isEmpty()){
+         Optional<journalEntry> temp =JournalEntryService.findById(myid);
+         if(temp.isPresent()){
+             return new ResponseEntity<>(temp.get(), HttpStatus.OK) ;
+         }
+     }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND) ;
     }
 

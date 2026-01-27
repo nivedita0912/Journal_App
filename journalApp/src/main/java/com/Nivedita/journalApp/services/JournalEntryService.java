@@ -42,8 +42,6 @@ public class JournalEntryService {
         if (user == null) {
             throw new IllegalArgumentException("User not found");
         }
-//
-//        entry.setDate(LocalDateTime.now());
 
         journalEntry saved = journalEntryRepository.save(entry);
 
@@ -72,14 +70,13 @@ public class JournalEntryService {
 
 
 
-        public void saveGeneralEntry(journalEntry JournalEntry) {
-        journalEntryRepository.save(JournalEntry);
-    }
+//        public void saveGeneralEntry(journalEntry JournalEntry) {
+//        journalEntryRepository.save(JournalEntry);
+//    }
 
     public List<journalEntry> getAll() {
         return journalEntryRepository.findAll();
     }
-
 
     public Optional<journalEntry> findById(ObjectId id) {
         return journalEntryRepository.findById(id);
