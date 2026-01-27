@@ -63,23 +63,33 @@ public class entrycontroller {
     }
 
     @DeleteMapping("/id/{myid}")
-    public void  delete(@PathVariable ObjectId myid) {
+    public ResponseEntity<?>  delete(@PathVariable ObjectId myid) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String name = auth.getName();
-        JournalEntryService.delete(name, myid);
+    boolean response = JournalEntryService.delete(name, myid);
+  if(response){
+      return new ResponseEntity<>(HttpStatus.OK);
+  }
+  return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PutMapping("/id/{userName}/{myid}")
+    @PutMapping("/id/{myid}")
     public ResponseEntity<?> update(
             @RequestBody journalEntry a,
-            @PathVariable String userName,
             @PathVariable ObjectId myid){
-        journalEntry temp = JournalEntryService.findById(myid).orElse(null);
-        if(temp != null) {
-       temp.setTitle(a.getTitle() != null && !a.getTitle().isEmpty() ? a.getTitle() : temp.getTitle());
-       temp.setContent(a.getContent() != null && !a.getContent().isEmpty() ? a.getContent() : temp.getContent());
-            JournalEntryService.saveEntry(temp);
-            return new ResponseEntity<>(HttpStatus.OK);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String name = auth.getName();
+        UserEntry userEntry =  userEntryService.findByUserName(name);
+        List<journalEntry> collect = userEntry.getUserEntryList().stream().filter(x -> x.getId().equals(myid)).collect(Collectors.toList());
+        if(!collect.isEmpty()){
+            Optional<journalEntry> temp =JournalEntryService.findById(myid);
+            if(temp.isPresent()){
+               journalEntry old = temp.get();
+                old.setTitle(a.getTitle() != null && !a.getTitle().isEmpty() ? a.getTitle() : old.getTitle());
+                old.setContent(a.getContent() != null && !a.getContent().isEmpty() ? a.getContent() : old.getContent());
+                JournalEntryService.saveEntry(old);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

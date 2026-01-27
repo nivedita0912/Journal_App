@@ -25,7 +25,7 @@ public class JournalEntryService {
     private UserEntryService userEntryService;
 
     @Transactional
-    public void delete( String userName,ObjectId id) {
+    public boolean delete( String userName,ObjectId id) {
 
         try {
             UserEntry user = userEntryService.findByUserName(userName);
@@ -33,12 +33,13 @@ public class JournalEntryService {
             if (removed) {
                 userEntryService.saveGeneralEntry(user);
                 journalEntryRepository.deleteById(id);
+                return true;
             }
         } catch (Exception e) {
-            System.out.println(e);
-            throw  new RuntimeException("error in finding the either user or entry");
-        }
+            log.error("e: ", e);
+        } return false;
     }
+
     public void saveEntry(journalEntry journalEntry) {
         journalEntryRepository.save(journalEntry);
     }
